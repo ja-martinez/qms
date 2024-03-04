@@ -6,6 +6,49 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export function debounce<T extends (...args: unknown[]) => unknown>(
+  callback: T,
+  wait: number,
+) {
+  let timeoutId: number;
+  return (...args: unknown[]) => {
+    window.clearTimeout(timeoutId);
+    timeoutId = window.setTimeout(() => {
+      callback(...args);
+    }, wait);
+  };
+}
+
+export const throttle = <R, A extends any[]>(
+  fn: (...args: A) => R,
+  delay: number,
+): [(...args: A) => R | undefined, () => void] => {
+  let wait = false;
+  let timeout: undefined | number;
+  let cancelled = false;
+
+  return [
+    (...args: A) => {
+      if (cancelled) return undefined;
+      if (wait) return undefined;
+
+      const val = fn(...args);
+
+      wait = true;
+
+      timeout = window.setTimeout(() => {
+        wait = false;
+      }, delay);
+
+      return val;
+    },
+    () => {
+      cancelled = true;
+      clearTimeout(timeout);
+    },
+  ];
+};
+
 const BACKEND_URL = "http://localhost:3000";
 
 export async function getDesks(): Promise<Desk[]> {
@@ -22,7 +65,7 @@ export async function getClients(): Promise<Client[]> {
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
-  const clients = await response.json();
+  const clients: Client[] = await response.json();
   return clients;
 }
 
@@ -35,7 +78,10 @@ export async function getDepartments(): Promise<Department[]> {
   return departments;
 }
 
-export async function createClient(departmentId: number, token: string): Promise<Client> {
+export async function createClient(
+  departmentId: number,
+  token: string,
+): Promise<Client> {
   const response = await fetch(`${BACKEND_URL}/clients`, {
     method: "POST",
     headers: {
@@ -54,7 +100,7 @@ export async function createClient(departmentId: number, token: string): Promise
 export async function dequeueClient(
   deskId: number,
   departmentId: number,
-  token: string
+  token: string,
 ): Promise<Client | null> {
   const response = await fetch(`${BACKEND_URL}/desk/${deskId}/dequeue`, {
     method: "POST",
@@ -74,9 +120,9 @@ export async function dequeueClient(
 export async function callClient(
   deskId: number,
   clientId: number,
-  token: string
+  token: string,
 ): Promise<Client | null> {
-  const response = await fetch(`${BACKEND_URL}/desk/${deskId}/dequeue`, {
+  const response = await fetch(`${BACKEND_URL}/desk/${deskId}/call`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,

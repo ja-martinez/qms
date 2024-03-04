@@ -1,10 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useSyncExternalStore,
-  useState,
-  useEffect,
-} from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import { auth } from "@/firebase";
 import { onAuthStateChanged, User } from "firebase/auth";
 
@@ -18,13 +12,13 @@ export function UserProvider({ children }: React.HTMLAttributes<HTMLElement>) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (isInitializing) {
-        setIsInitializing(false)
+        setIsInitializing(false);
       }
       setUser(user);
     });
 
     return unsubscribe;
-  }, []);
+  }, [isInitializing]);
 
   return (
     <isInitializingContext.Provider value={isInitializing}>

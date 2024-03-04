@@ -1,0 +1,36 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Department {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  name_es String @unique
+  clients Client[]
+}
+
+model Client {
+  id           Int        @id @default(autoincrement())
+  called       Boolean    @default(false)
+  department   Department @relation(fields: [departmentId], references: [id])
+  departmentId Int
+  desk         Desk?
+  version      Int        @default(1)
+  updatedAt    DateTime   @updatedAt
+}
+
+model Desk {
+  id        Int      @id @default(autoincrement())
+  number    Int      @unique
+  client    Client?  @relation(fields: [clientId], references: [id])
+  clientId  Int?     @unique
+  updatedAt DateTime @updatedAt @default(now())
+}

@@ -1,22 +1,6 @@
-"use client";
-
-import * as React from "react";
-import {
-  CaretSortIcon,
-  CheckIcon,
-  PlusCircledIcon,
-} from "@radix-ui/react-icons";
-
-import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { useDeskId, useSetDeskId } from "@/contexts/DeskContext";
+import { getDesks } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
 import {
   Select,
   SelectContent,
@@ -24,143 +8,50 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Avatar as AvatarShadcn,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar";
+import Avatar from "boring-avatars";
 
-const groups = [
-  {
-    label: "Personal Account",
-    teams: [
-      {
-        label: "Alicia Koch",
-        value: "personal",
-      },
-    ],
-  },
-  {
-    label: "Teams",
-    teams: [
-      {
-        label: "Acme Inc.",
-        value: "acme-inc",
-      },
-      {
-        label: "Monsters Inc.",
-        value: "monsters",
-      },
-    ],
-  },
-];
+export default function DeskSwicher() {
+  const deskId = useDeskId();
+  const setDeskId = useSetDeskId();
 
-const desks = Array(7)
-  .fill(0)
-  .map((_, i) => ({ id: i, number: i + 1 }));
+  const { status, data: desks } = useQuery({
+    queryKey: ["desks"],
+    queryFn: getDesks,
+  });
 
-type Team = (typeof groups)[number]["teams"][number];
-
-type PopoverTriggerProps = React.ComponentPropsWithoutRef<
-  typeof PopoverTrigger
->;
-
-interface TeamSwitcherProps extends PopoverTriggerProps {}
-
-export default function DeskSwitcher({ className }: TeamSwitcherProps) {
-  const [open, setOpen] = React.useState(false);
-  const [selectedTeam, setSelectedTeam] = React.useState<Team>(
-    groups[0].teams[0]
-  );
+  const deskSelectItems = desks?.map((desk) => (
+    <SelectItem className="pr-8" value={String(desk.id)} key={desk.id}>
+      <div className="flex gap-4">
+        <AvatarShadcn className="h-5 w-5">
+          <div className="aspect-square h-full w-full">
+            <Avatar
+              size={20}
+              name={desk.id.toString()}
+              variant="marble"
+              square
+            />
+          </div>
+        </AvatarShadcn>
+        Desk {desk.number}
+      </div>
+      {/* <div>Desk {desk.number}</div> */}
+    </SelectItem>
+  ));
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          aria-label="Select a team"
-          className={cn("w-[200px] justify-between", className)}
-        >
-          <Avatar className="mr-2 h-5 w-5">
-            <AvatarImage
-              src={`https://avatar.vercel.sh/${selectedTeam.value}.png`}
-              alt={selectedTeam.label}
-              className="grayscale"
-            />
-            <AvatarFallback>SC</AvatarFallback>
-          </Avatar>
-          {selectedTeam.label}
-          <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
-        <Command>
-          <CommandList>
-            <CommandInput placeholder="Search team..." />
-            <CommandEmpty>No team found.</CommandEmpty>
-            {groups.map((group) => (
-              <CommandGroup key={group.label} heading={group.label}>
-                {group.teams.map((team) => (
-                  <CommandItem
-                    key={team.value}
-                    onSelect={() => {
-                      setSelectedTeam(team);
-                      setOpen(false);
-                    }}
-                    className="text-sm"
-                  >
-                    <Avatar className="mr-2 h-5 w-5">
-                      <AvatarImage
-                        src={`https://avatar.vercel.sh/${team.value}.png`}
-                        alt={team.label}
-                        className="grayscale"
-                      />
-                      <AvatarFallback>SC</AvatarFallback>
-                    </Avatar>
-                    {team.label}
-                    <CheckIcon
-                      className={cn(
-                        "ml-auto h-4 w-4",
-                        selectedTeam.value === team.value
-                          ? "opacity-100"
-                          : "opacity-0"
-                      )}
-                    />
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            ))}
-          </CommandList>
-          <CommandSeparator />
-          <CommandList>
-            <CommandGroup>
-              <DialogTrigger asChild>
-                <CommandItem
-                  onSelect={() => {
-                    setOpen(false);
-                    setShowNewTeamDialog(true);
-                  }}
-                >
-                  <PlusCircledIcon className="mr-2 h-5 w-5" />
-                  Create Team
-                </CommandItem>
-              </DialogTrigger>
-            </CommandGroup>
-          </CommandList>
-        </Command>
-        <Select>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select a fruit" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Fruits</SelectLabel>
-              <SelectItem value="apple">Apple</SelectItem>
-              <SelectItem value="banana">Banana</SelectItem>
-              <SelectItem value="blueberry">Blueberry</SelectItem>
-              <SelectItem value="grapes">Grapes</SelectItem>
-              <SelectItem value="pineapple">Pineapple</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </PopoverContent>
-    </Popover>
+    <Select
+      value={String(deskId)}
+      onValueChange={(value) => setDeskId(Number(value))}
+    >
+      <SelectTrigger className="w-auto gap-24 px-4 py-0 font-medium">
+        <SelectValue className="" placeholder="Select a desk number" />
+      </SelectTrigger>
+      <SelectContent className="">{deskSelectItems}</SelectContent>
+    </Select>
   );
 }

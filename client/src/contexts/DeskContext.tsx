@@ -1,45 +1,42 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { HtmlHTMLAttributes, createContext, useContext, useState } from "react";
-import { Desk } from "@/lib/types";
-import { useQuery } from "@tanstack/react-query";
-import { getDesks } from "@/lib/utils";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 
+export const DeskIdContext = createContext<number | null>(null);
+export const SetDeskIdContext = createContext<(desk: number | null) => void>(
+  () => {},
+);
 
-export const DeskContext = createContext<Desk | null>(null)
-export const SetDeskContext = createContext<(desk: Desk | null) => void>(() => {})
+export function DeskProvider({ children }: HtmlHTMLAttributes<HTMLElement>) {
+  // const [deskId, setDeskId] = useState<number | null>(null)
 
-export function DeskProvider({children}: HtmlHTMLAttributes<HTMLElement>) {
-  const [desk, setDesk] = useState<Desk | null>(null)
+  // useEffect(() => {
+  //   const localStorageDeskId = localStorage.getItem("deskId")
+  //   if (localStorageDeskId) {
+  //     setDeskId(JSON.parse(localStorageDeskId))
+  //   }
+  // }, [])
 
-  const {data: desks} = useQuery({
-    queryKey: ["desks"],
-    queryFn: getDesks
-  })
+  // useEffect(() => {
+  //   if (!deskId) return
+  //   localStorage.setItem("deskId", JSON.stringify(deskId))
+  // }, [deskId])
 
-  useEffect(() => {
-    if (!desks) return
-
-    const localStorageDeskId = localStorage.getItem("deskId")
-
-    if (localStorageDeskId) {
-      
-      setDesk(localStorageDesk)
-    }
-  }, [desks])
+  const [deskId, setDeskId] = useLocalStorage<number | null>(null, "deskId");
 
   return (
-    <DeskContext.Provider value={desk}>
-      <SetDeskContext.Provider value={setDesk}>
-      {children}
-      </SetDeskContext.Provider>
-    </DeskContext.Provider>
-  )
+    <DeskIdContext.Provider value={deskId}>
+      <SetDeskIdContext.Provider value={setDeskId}>
+        {children}
+      </SetDeskIdContext.Provider>
+    </DeskIdContext.Provider>
+  );
 }
 
-export function useDesk() {
-  return useContext(DeskContext)
+export function useDeskId() {
+  return useContext(DeskIdContext);
 }
 
-export function useSetDesk() {
-  return useContext(SetDeskContext)
+export function useSetDeskId() {
+  return useContext(SetDeskIdContext);
 }

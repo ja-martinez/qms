@@ -1,8 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-// import logoUrl from "../assets/rl-jones-logo.png";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -13,19 +11,25 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-// import { Card, CardTitle, CardContent, CardHeader } from "@/components/ui/card";
-// import { toast } from "@/components/ui/use-toast"
-// import { auth } from "@/firebase";
-
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  redirect,
+  useNavigate,
+  getRouteApi,
+} from "@tanstack/react-router";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/firebase";
 import { useUser } from "@/contexts/UserContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const routeApi = getRouteApi("/_initial/logIn");
 
 export const Route = createFileRoute("/_initial/logIn")({
-  beforeLoad: async ({ context: { user, desk } }) => {
-    if (user && !desk) {
+  validateSearch: z.object({
+    redirect: z.string().catch("/"),
+  }),
+  beforeLoad: async ({ context: { user, deskId } }) => {
+    if (user && !deskId) {
       throw redirect({
         to: "/chooseDesk",
       });
@@ -48,6 +52,7 @@ function LogIn() {
   const [isLoading, setIsLoading] = useState(false);
   const user = useUser();
   const navigate = useNavigate();
+  const search = routeApi.useSearch();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -57,14 +62,21 @@ function LogIn() {
     },
   });
 
+  useEffect(() => {
+    if (!user) return;
+    if (search.redirect) {
+      navigate({ to: search.redirect });
+      return;
+    }
+    navigate({ to: "/chooseDesk" });
+  }, [user, navigate, search.redirect]);
+
   async function onSubmit({ email, password }: z.infer<typeof FormSchema>) {
     setIsLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
       setIsLoading(false);
       setIsIncorrect(false);
-      console.log(`onSubmit user: ${JSON.stringify(user)}`);
-      navigate({ to: "/chooseDesk" });
     } catch (e) {
       console.error(e);
       setIsLoading(false);
@@ -76,10 +88,10 @@ function LogIn() {
     <>
       {/* <img src={logoUrl} alt="RL Jones Logo" className="object-scale-down" /> */}
       <div className="flex flex-col gap-1">
-        <h1 className="font-semibold text-2xl mx-auto tracking-wider">
+        <h1 className="mx-auto text-2xl font-semibold tracking-wider">
           Welcome
         </h1>
-        <p className="text-sm text-muted-foreground mx-auto">
+        <p className="mx-auto text-sm text-muted-foreground">
           Please enter your account information.
         </p>
       </div>
@@ -105,7 +117,7 @@ function LogIn() {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input {...field} type="password" />
                 </FormControl>
                 <FormMessage />
               </FormItem>

@@ -1,20 +1,20 @@
 import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_initial")({
-  beforeLoad: ({context: {user, desk}}) => {
-    if (user && desk) {
+  beforeLoad: ({ context: { user, deskId } }) => {
+    if (user && deskId) {
       throw redirect({
-        to: "/dashboard"
-      })
+        to: "/dashboard",
+      });
     }
   },
-  component: Initial
+  component: Initial,
 });
 
 function Initial() {
   return (
-    <div className="flex flex-col justify-center items-center grow">
-      <div className="flex flex-col justify-center w-[350px] items-stretch grow gap-5 mb-10">
+    <div className="flex grow flex-col items-center justify-center">
+      <div className="mb-10 flex w-[350px] grow flex-col items-stretch justify-center gap-5">
         <Outlet />
       </div>
     </div>

@@ -1,36 +1,14 @@
-"use client"
-
-import * as React from "react"
-import {
-  CaretSortIcon,
-  ChevronDownIcon,
-  DotsHorizontalIcon,
-} from "@radix-ui/react-icons"
 import {
   ColumnDef,
   ColumnFiltersState,
-  SortingState,
-  VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
-  getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table"
-
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
+  filterFns,
+  Row,
+} from "@tanstack/react-table";
 import {
   Table,
   TableBody,
@@ -38,238 +16,151 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
+} from "@/components/ui/table";
+import { Client } from "@/lib/types";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { callClient, getClients } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components//ui/badge";
+import { useDeskId } from "@/contexts/DeskContext";
+import { useUser } from "@/contexts/UserContext";
+import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
+import { DataTablePagination } from "./DataTablePagination";
+import { REFETCH_INTERVAL } from "@/lib/globals";
+import { equal } from "assert";
 
-type Department = {
-  id: number
-  name: string
-}
-
-type Client = {
-  id: number
-  departmentId: number
-  called: boolean
-}
-
-const departments: Department[] = [
-  {
-    id: 0,
-    name: "Insurance"
-  },
-  {
-    id: 1,
-    name: "Motor Vehicle Services"
-  }
-]
-
-const departmentsMap: {[key: number]: Department} = {
-  0: {
-    id: 0,
-    name: "Insurance"
-  },
-  1: {
-    id: 1,
-    name: "Motor Vehicle Services"
-  }
-}
-
-const clients: Client[] = [
-  {
-    id: 1,
-    departmentId: 0,
-    called: true
-  },
-  {
-    id: 2,
-    departmentId: 1,
-    called: false
-  },
-  {
-    id: 3,
-    departmentId: 0,
-    called: false
-  },
-  {
-    id: 4,
-    departmentId: 1,
-    called: false
-  },
-
-]
-
-const data: Payment[] = [
-  {
-    id: "m5gr84i9",
-    amount: 316,
-    status: "success",
-    email: "ken99@yahoo.com",
-  },
-  {
-    id: "3u1reuv4",
-    amount: 242,
-    status: "success",
-    email: "Abe45@gmail.com",
-  },
-  {
-    id: "derv1ws0",
-    amount: 837,
-    status: "processing",
-    email: "Monserrat44@gmail.com",
-  },
-  {
-    id: "5kma53ae",
-    amount: 874,
-    status: "success",
-    email: "Silas22@gmail.com",
-  },
-  {
-    id: "bhqecj4p",
-    amount: 721,
-    status: "failed",
-    email: "carmella@hotmail.com",
-  },
-]
-
-export type Payment = {
-  id: string
-  amount: number
-  status: "pending" | "processing" | "success" | "failed"
-  email: string
-}
-
-export const columns: ColumnDef<Client>[] = [
-  // {
-  //   id: "select",
-  //   header: ({ table }) => (
-  //     <Checkbox
-  //       checked={
-  //         table.getIsAllPageRowsSelected() ||
-  //         (table.getIsSomePageRowsSelected() && "indeterminate")
-  //       }
-  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-  //       aria-label="Select all"
-  //     />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <Checkbox
-  //       checked={row.getIsSelected()}
-  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
-  //       aria-label="Select row"
-  //     />
-  //   ),
-  //   enableSorting: false,
-  //   enableHiding: false,
-  // },
+const columns: ColumnDef<Client>[] = [
   {
     accessorKey: "id",
     header: "Client Number",
-    cell: ({ row }) => (
-      <div >{row.getValue("id")}</div>
-    ),
   },
   {
-    accessorKey: "departmentId",
+    accessorKey: "department.name",
     header: "Department",
-    cell: ({ row }) => {
-      const departmentId = parseInt(row.getValue("departmentId"))
-      console.log(departmentId)
-      return <div>{departmentsMap[departmentId].name}</div>
-    },
   },
   {
     accessorKey: "called",
     header: "Called",
     cell: ({ row }) => {
-      const called = Boolean(row.getValue("called"))
+      const isCalled = Boolean(row.getValue("called"));
 
-      return <Badge variant={called ? "success" : "destructive"}>{called ? "" : "Not "} Called</Badge>
+      if (isCalled) {
+        return (
+          <Badge variant="success" className="">
+            Called
+          </Badge>
+        );
+      }
+
+      return (
+        <Badge variant="secondary" className="">
+          Not Called
+        </Badge>
+      );
     },
   },
   {
-    id: "call",
-    enableHiding: false,
+    id: "callClient",
     cell: ({ row }) => {
-      const client = row.original
+      const clientId = row.original.id;
 
-      return (
-        <Button onClick={() => console.log(`calling client ${client.id}`)}>Call</Button>
-      )
+      return <CallClientButton clientId={clientId} />;
     },
   },
-]
+];
 
-function callClient(deskNumber: number, clientId: number) {
-  console.log(`Calling client ${clientId} to desk ${deskNumber}`)
-}
+function CallClientButton({ clientId }: { clientId: number }) {
+  const deskId = useDeskId()!;
+  const user = useUser()!;
+  const queryClient = useQueryClient();
 
-export default function ClientTable() {
-  const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  )
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = React.useState({})
-
-  const table = useReactTable({
-    clients,
-    columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
+  const mutation = useMutation({
+    mutationFn: async (e: React.SyntheticEvent) => {
+      const token = await user.getIdToken();
+      const client = await callClient(deskId, clientId, token);
+      toast("Client has been called", {
+        description: `Client number ${client?.id}`,
+      });
+      return client;
     },
-  })
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["clients"] });
+      queryClient.invalidateQueries({ queryKey: ["desks"] });
+    },
+  });
 
   return (
-    <div className="w-full">
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
+    <Button className="w-full" onClick={mutation.mutate}>
+      Call Client
+    </Button>
+  );
+}
+
+const idFilter = (row: Row<Client>, columnId, filterValue) => {
+  console.log("whadddappp");
+  return row.original.id.toString().startsWith(filterValue.toString);
+};
+
+export default function ClientTable() {
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
+  const clientsQuery = useQuery({
+    queryKey: ["clients"],
+    queryFn: async () => {
+      const clients = await getClients();
+      clients.sort((a, b) => {
+        if (a.called !== b.called) {
+          return Number(a.called) - Number(b.called);
+        }
+
+        return b.id - a.id;
+      });
+      return clients;
+    },
+    refetchInterval: REFETCH_INTERVAL,
+  });
+
+  const clients = clientsQuery.data ? clientsQuery.data : [];
+
+  const table = useReactTable({
+    data: clients,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    // filterFns: {
+    //   idFilter: idFilter,
+    // },
+    // globalFilterFn: idFilter,
+    getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      columnFilters,
+    },
+  });
+
+  if (clientsQuery.status !== "success") {
+    return null;
+  }
+
+  return (
+    <div>
+      {/* Filter / Search */}
+      <div className="flex justify-between pb-4">
+        <h2 className="text-3xl font-medium tracking-tight">Clients</h2>
+        {/* <Input
+          placeholder="Filter clients..."
+          value={(table.getColumn("id")?.getFilterValue() as number) ?? ""}
+          onChange={(event) => {
+            table.getColumn("id")?.setFilterValue(event.target.value)
+          }
           }
           className="max-w-sm"
-        />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDownIcon className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                )
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        /> */}
       </div>
-      <div className="rounded-md border">
+      {/* Table */}
+      <div className="rounded-md border px-3 py-1">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -281,10 +172,10 @@ export default function ClientTable() {
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
-                  )
+                  );
                 })}
               </TableRow>
             ))}
@@ -300,7 +191,7 @@ export default function ClientTable() {
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}
@@ -319,30 +210,8 @@ export default function ClientTable() {
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
+      {/* Pagination */}
+      <DataTablePagination table={table} />
     </div>
-  )
+  );
 }
