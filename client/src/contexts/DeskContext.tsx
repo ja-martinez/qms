@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { HtmlHTMLAttributes, createContext, useContext, useState } from "react";
+
+import { HtmlHTMLAttributes, createContext, useContext, } from "react";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 
 export const DeskIdContext = createContext<number | null>(null);

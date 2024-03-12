@@ -1,25 +1,19 @@
 import {
   Avatar as AvatarShadcn,
-  AvatarFallback,
-  AvatarImage,
 } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useUser } from "@/contexts/UserContext";
 import Avatar from "boring-avatars";
 import { auth } from "@/firebase";
 import { signOut } from "firebase/auth";
-import { useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
 
 export function UserNav() {
   const user = useUser();

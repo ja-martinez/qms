@@ -26,7 +26,12 @@ function Dashboard() {
 
   useEffect(() => {
     if (!user) {
-      navigate({ to: "/logIn" });
+      navigate({ 
+        to: "/logIn",
+        search: {
+          redirect: location.href
+        } 
+      });
     }
   }, [user, navigate]);
 

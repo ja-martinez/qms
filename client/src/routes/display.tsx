@@ -8,8 +8,6 @@ export const Route = createFileRoute("/display")({
   component: Display,
 });
 
-<MoveRight />;
-
 function Display() {
   const { data: desks } = useQuery({
     queryKey: ["desks"],
@@ -39,13 +37,13 @@ function Display() {
     return (
       <div className="flex items-center justify-between rounded-xl border border-gray-300 bg-white px-8 py-3">
         <div className="flex flex-col items-center justify-center">
-          <div className="text-muted-foreground text-md">Cliente</div>
-          <div className="text-6xl font-medium">{desk.client?.id || "--"}</div>
+          <div className="text-muted-foreground text-xl">Cliente</div>
+          <div className="text-9xl font-medium">{desk.client?.id || "--"}</div>
         </div>
         <MoveRight size={70} strokeWidth={1.4} color="#737373" />
         <div className="flex flex-col items-center justify-center">
-          <div className="text-muted-foreground text-md">Escritorio</div>
-          <div className="text-6xl font-medium">{desk.number}</div>
+          <div className="text-muted-foreground text-xl">Escritorio</div>
+          <div className="text-9xl font-medium">{desk.number}</div>
         </div>
       </div>
     );
@@ -58,12 +56,12 @@ function Display() {
         <div className="col-start-2 row-span-3 row-start-1 flex flex-col items-center justify-center gap-3 rounded-xl border border-gray-300 bg-white p-3">
           {mostRecentIndex !== undefined ? (
             <>
-              <div className="text-xl ">Numero</div>
-              <div className="text-8xl text-green-600">
+              <div className="text-3xl ">Numero</div>
+              <div className="text-[11rem] font-medium text-green-600">
                 {desks![mostRecentIndex].clientId}
               </div>
-              <div className="text-xl ">Proceder al escritorio</div>
-              <div className="text-8xl text-green-600">
+              <div className="text-3xl ">Proceda al escritorio</div>
+              <div className="text-[11rem] font-medium text-green-600">
                 {desks![mostRecentIndex].number}
               </div>
             </>

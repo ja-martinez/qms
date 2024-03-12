@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,7 +32,7 @@ export default function DequeueClient() {
   const deskId = useDeskId()!;
   const queryClient = useQueryClient();
 
-  const { status, data: departments } = useQuery({
+  const { data: departments } = useQuery({
     queryKey: ["departments"],
     queryFn: getDepartments,
   });
@@ -79,7 +79,7 @@ export default function DequeueClient() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(mutation.mutate)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(mutation.mutate as SubmitHandler<{departmentId: string;}>)} className="space-y-6">
         <FormField
           control={form.control}
           name="departmentId"

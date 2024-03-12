@@ -8,7 +8,7 @@ export default function CreateClient() {
   const user = useUser()!;
   const queryClient = useQueryClient();
 
-  const { status, data: departments } = useQuery({
+  const { data: departments } = useQuery({
     queryKey: ["departments"],
     queryFn: getDepartments,
   });

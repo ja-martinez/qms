@@ -4,7 +4,7 @@ import { z } from "zod";
 import { getDesks } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
-import { ReactElement, useEffect } from "react";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -28,6 +28,9 @@ export const Route = createFileRoute("/_initial/chooseDesk")({
     if (!user) {
       throw redirect({
         to: "/logIn",
+        search: {
+          redirect: location.href
+        }
       });
     }
   },
@@ -45,7 +48,7 @@ function ChooseDesk() {
   const deskId = useDeskId();
   const navigate = useNavigate();
 
-  const { status, data: desks } = useQuery({
+  const { data: desks } = useQuery({
     queryKey: ["desks"],
     queryFn: getDesks,
   });

@@ -1,3 +1,7 @@
+## Building
+
+To build for use in my mac, just `npm run build`
+
 for deploying with express
 
 - https://github.com/szymmis/vite-express

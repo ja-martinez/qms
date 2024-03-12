@@ -47,9 +47,9 @@ const FormSchema = z.object({
   }),
 });
 
-function LogIn() {
+export function LogIn() {
   const [isIncorrect, setIsIncorrect] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [_isLoading, setIsLoading] = useState(false);
   const user = useUser();
   const navigate = useNavigate();
   const search = routeApi.useSearch();

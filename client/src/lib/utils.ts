@@ -49,13 +49,23 @@ export const throttle = <R, A extends any[]>(
   ];
 };
 
-const BACKEND_URL = "http://localhost:3000";
+const BACKEND_URL = "http://qms.local/api";
+
+// const BACKEND_URL = "http://localhost:3000";
+
+// if (import.meta.env.PROD) {
+//   BACKEND_URL = "http://tranquility.local/api";
+// }
+
+// if (import.meta.env?.DEPLOY_MODE === "DEPLOY") {
+//   BACKEND_URL = "http://qms.local/api"
+// }
 
 export async function getDesks(): Promise<Desk[]> {
   const response = await fetch(`${BACKEND_URL}/desks`);
   if (!response.ok) {
     throw new Error("Network response was not ok");
-  }
+  }   
   const desks = await response.json();
   return desks;
 }

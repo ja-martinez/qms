@@ -10,8 +10,6 @@ import {
 } from "@/components/ui/select";
 import {
   Avatar as AvatarShadcn,
-  AvatarFallback,
-  AvatarImage,
 } from "@/components/ui/avatar";
 import Avatar from "boring-avatars";
 
@@ -19,7 +17,7 @@ export default function DeskSwicher() {
   const deskId = useDeskId();
   const setDeskId = useSetDeskId();
 
-  const { status, data: desks } = useQuery({
+  const { data: desks } = useQuery({
     queryKey: ["desks"],
     queryFn: getDesks,
   });

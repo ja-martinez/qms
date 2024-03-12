@@ -6,8 +6,8 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   useReactTable,
-  filterFns,
-  Row,
+  // filterFns,
+  // Row,
 } from "@tanstack/react-table";
 import {
   Table,
@@ -25,11 +25,11 @@ import { Badge } from "@/components//ui/badge";
 import { useDeskId } from "@/contexts/DeskContext";
 import { useUser } from "@/contexts/UserContext";
 import { toast } from "sonner";
-import { Input } from "@/components/ui/input";
+// import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { DataTablePagination } from "./DataTablePagination";
 import { REFETCH_INTERVAL } from "@/lib/globals";
-import { equal } from "assert";
+// import { equal } from "assert";
 
 const columns: ColumnDef<Client>[] = [
   {
@@ -77,7 +77,7 @@ function CallClientButton({ clientId }: { clientId: number }) {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: async (e: React.SyntheticEvent) => {
+    mutationFn: async (_e: React.SyntheticEvent) => {
       const token = await user.getIdToken();
       const client = await callClient(deskId, clientId, token);
       toast("Client has been called", {
@@ -97,11 +97,6 @@ function CallClientButton({ clientId }: { clientId: number }) {
     </Button>
   );
 }
-
-const idFilter = (row: Row<Client>, columnId, filterValue) => {
-  console.log("whadddappp");
-  return row.original.id.toString().startsWith(filterValue.toString);
-};
 
 export default function ClientTable() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);

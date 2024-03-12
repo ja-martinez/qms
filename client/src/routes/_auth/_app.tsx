@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 import DeskSwitcher from "@/components/DeskSwitcher";
 import { ModeToggle } from "@/components/ModeToggle";
 import MainNav from "@/components/MainNav";
