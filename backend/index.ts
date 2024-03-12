@@ -3,6 +3,7 @@ import express, { NextFunction, Request, Response } from "express";
 import { body, matchedData, validationResult, param } from "express-validator";
 import { auth } from "./firebase";
 import cors from "cors";
+import { print } from "./print";
 
 const prisma = new PrismaClient();
 const app = express();
@@ -62,11 +63,13 @@ app.post("/clients", body("departmentId").isInt(), async (req, res, next) => {
             connect: { id: departmentId },
           },
         },
+        include: {department: true}
       });
       res.json(newClient);
+      print(newClient.id.toString(), newClient.department.name_es)
     } catch (e) {
       next(e);
-      console.error;
+      console.error(e);
     }
   } else {
     res.status(422).send({ errors: result.array() });
