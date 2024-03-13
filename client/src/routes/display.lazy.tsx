@@ -23,7 +23,7 @@ function Display() {
   let mostRecentDate = new Date("December 17, 1995 03:24:00");
   if (desks) {
     for (let i = 0; i < desks.length; i++) {
-      if (!desks[0].clientId) continue;
+      if (!desks[i].clientId) continue;
 
       const currDate = new Date(desks[i].updatedAt);
 
