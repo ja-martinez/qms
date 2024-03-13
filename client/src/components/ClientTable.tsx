@@ -115,6 +115,7 @@ export default function ClientTable() {
       return clients;
     },
     refetchInterval: REFETCH_INTERVAL,
+    refetchIntervalInBackground: true
   });
 
   const clients = clientsQuery.data ? clientsQuery.data : [];

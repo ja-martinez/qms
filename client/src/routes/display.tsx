@@ -13,6 +13,7 @@ function Display() {
     queryKey: ["desks"],
     queryFn: getDesks,
     refetchInterval: REFETCH_INTERVAL,
+    refetchIntervalInBackground: true
   });
 
   // const mostRecentIndex = desks?.filter((desk) => !!desk.clientId).sort(())
