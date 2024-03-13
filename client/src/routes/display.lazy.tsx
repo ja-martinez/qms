@@ -1,10 +1,10 @@
 import { REFETCH_INTERVAL } from "@/lib/globals";
 import { getDesks } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute } from "@tanstack/react-router";
 import { MoveRight } from "lucide-react";
 
-export const Route = createFileRoute("/display")({
+export const Route = createLazyFileRoute("/display")({
   component: Display,
 });
 

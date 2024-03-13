@@ -49,9 +49,9 @@ export const throttle = <R, A extends any[]>(
   ];
 };
 
-const BACKEND_URL = "http://qms.local/api";
+// const BACKEND_URL = "http://qms.local/api";
 
-// const BACKEND_URL = "http://localhost:3000";
+const BACKEND_URL = "http://localhost:3000";
 
 // if (import.meta.env.PROD) {
 //   BACKEND_URL = "http://tranquility.local/api";

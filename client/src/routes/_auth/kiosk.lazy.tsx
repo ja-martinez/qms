@@ -1,11 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute } from "@tanstack/react-router";
 import { useUser } from "@/contexts/UserContext";
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { createClient, getDepartments } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/_auth/kiosk")({
+export const Route = createLazyFileRoute("/_auth/kiosk")({
   component: Kiosk,
 });
 
