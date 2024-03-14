@@ -52,7 +52,10 @@ export default function DequeueClient() {
 
   const mutation = useMutation({
     mutationFn: async (data: z.infer<typeof FormSchema>) => {
-      const departmentId = Number(data.departmentId);
+      const departmentId =
+        data.departmentId === "any"
+          ? data.departmentId
+          : Number(data.departmentId);
       const token = await user.getIdToken();
       const client = await dequeueClient(deskId, departmentId, token);
 
@@ -97,7 +100,10 @@ export default function DequeueClient() {
                       <SelectValue placeholder="Select a department" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent>{departmentSelectItems}</SelectContent>
+                  <SelectContent>
+                    <SelectItem value={"any"}>Any Department</SelectItem>
+                    {departmentSelectItems}
+                  </SelectContent>
                 </Select>
               </FormControl>
               <FormMessage />

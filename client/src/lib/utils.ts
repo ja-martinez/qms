@@ -60,20 +60,33 @@ export async function createClient(
 
 export async function dequeueClient(
   deskId: number,
-  departmentId: number,
+  departmentId: number | "any",
   token: string,
 ): Promise<Client | null> {
-  const response = await fetch(`${BACKEND_URL}/desk/${deskId}/dequeue`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ departmentId }),
-  });
+  let response;
+  console.log(departmentId);
+  if (departmentId === "any") {
+    response = await fetch(`${BACKEND_URL}/desk/${deskId}/callNext`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  } else {
+    response = await fetch(`${BACKEND_URL}/desk/${deskId}/dequeue`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ departmentId }),
+    });
+  }
+
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
+
   const nextClient = await response.json();
   return nextClient;
 }
