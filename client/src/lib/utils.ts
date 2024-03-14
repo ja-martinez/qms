@@ -16,7 +16,7 @@ export async function getDesks(): Promise<Desk[]> {
   const response = await fetch(`${BACKEND_URL}/desks`);
   if (!response.ok) {
     throw new Error("Network response was not ok");
-  }   
+  }
   const desks = await response.json();
   return desks;
 }

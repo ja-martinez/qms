@@ -8,9 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Avatar as AvatarShadcn,
-} from "@/components/ui/avatar";
+import { Avatar as AvatarShadcn } from "@/components/ui/avatar";
 import Avatar from "boring-avatars";
 
 export default function DeskSwicher() {

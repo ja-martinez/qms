@@ -1,6 +1,4 @@
-import {
-  Avatar as AvatarShadcn,
-} from "@/components/ui/avatar";
+import { Avatar as AvatarShadcn } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,

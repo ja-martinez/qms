@@ -1,4 +1,4 @@
-import { createLazyFileRoute, useNavigate} from "@tanstack/react-router";
+import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
 import ClientTable from "@/components/ClientTable";
 import DequeueClient from "@/components/DequeueClient";
 import CreateClient from "@/components/CreateClient";
@@ -6,9 +6,9 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useUser } from "@/contexts/UserContext";
 import { useEffect } from "react";
 
-export const Route = createLazyFileRoute('/_auth/_app/dashboard')({
-  component: Dashboard
-})
+export const Route = createLazyFileRoute("/_auth/_app/dashboard")({
+  component: Dashboard,
+});
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -16,11 +16,11 @@ function Dashboard() {
 
   useEffect(() => {
     if (!user) {
-      navigate({ 
+      navigate({
         to: "/logIn",
         search: {
-          redirect: location.href
-        } 
+          redirect: location.href,
+        },
       });
     }
   }, [user, navigate]);

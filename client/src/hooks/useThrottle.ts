@@ -1,19 +1,21 @@
 import { useMemo } from "react";
 
-function throttle<Args extends unknown[]>(fn: (..._args: Args) => void, cooldown: number) {
+function throttle<Args extends unknown[]>(
+  fn: (..._args: Args) => void,
+  cooldown: number,
+) {
   let isOnCooldown: boolean;
 
   const throttled = (...args: Args) => {
-    
     if (isOnCooldown) {
       return;
     }
-    
-    isOnCooldown = true;
-    
-    fn(...args)
 
-    window.setTimeout(() => isOnCooldown = false, cooldown);
+    isOnCooldown = true;
+
+    fn(...args);
+
+    window.setTimeout(() => (isOnCooldown = false), cooldown);
   };
 
   return throttled;

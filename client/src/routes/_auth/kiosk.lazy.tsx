@@ -34,7 +34,7 @@ function Kiosk() {
     },
   });
 
-  const handleClick = useThrottle(mutation.mutate, 1500, [])
+  const handleClick = useThrottle(mutation.mutate, 1500, []);
 
   const deskButtons = departments?.map((department) => (
     <Button

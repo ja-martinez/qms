@@ -23,9 +23,9 @@ import {
 
 import { useSetDeskId, useDeskId } from "@/contexts/DeskContext";
 
-export const Route = createLazyFileRoute('/_initial/chooseDesk')({
-  component: ChooseDesk
-})
+export const Route = createLazyFileRoute("/_initial/chooseDesk")({
+  component: ChooseDesk,
+});
 
 const FormSchema = z.object({
   deskId: z.coerce

@@ -13,7 +13,7 @@ function Display() {
     queryKey: ["desks"],
     queryFn: getDesks,
     refetchInterval: REFETCH_INTERVAL,
-    refetchIntervalInBackground: true
+    refetchIntervalInBackground: true,
   });
 
   // const mostRecentIndex = desks?.filter((desk) => !!desk.clientId).sort(())
@@ -38,12 +38,12 @@ function Display() {
     return (
       <div className="flex items-center justify-between rounded-xl border border-gray-300 bg-white px-8 py-3">
         <div className="flex flex-col items-center justify-center">
-          <div className="text-muted-foreground text-xl">Cliente</div>
+          <div className="text-xl text-muted-foreground">Cliente</div>
           <div className="text-9xl font-medium">{desk.client?.id || "--"}</div>
         </div>
         <MoveRight size={70} strokeWidth={1.4} color="#737373" />
         <div className="flex flex-col items-center justify-center">
-          <div className="text-muted-foreground text-xl">Escritorio</div>
+          <div className="text-xl text-muted-foreground">Escritorio</div>
           <div className="text-9xl font-medium">{desk.number}</div>
         </div>
       </div>

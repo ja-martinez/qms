@@ -54,7 +54,6 @@ export default function DequeueClient() {
     mutationFn: async (data: z.infer<typeof FormSchema>) => {
       const departmentId = Number(data.departmentId);
       const token = await user.getIdToken();
-      console.log(deskId, departmentId, token);
       const client = await dequeueClient(deskId, departmentId, token);
 
       if (!client) {
@@ -79,7 +78,12 @@ export default function DequeueClient() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(mutation.mutate as SubmitHandler<{departmentId: string;}>)} className="space-y-6">
+      <form
+        onSubmit={form.handleSubmit(
+          mutation.mutate as SubmitHandler<{ departmentId: string }>,
+        )}
+        className="space-y-6"
+      >
         <FormField
           control={form.control}
           name="departmentId"
