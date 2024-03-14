@@ -76,7 +76,33 @@ app.post("/clients", body("departmentId").isInt(), async (req, res, next) => {
   }
 });
 
-// dequeue client
+/*  Authentication Middleware */
+app.use(verifyToken);
+
+// Call next client
+app.post(
+  "/desk/:deskId/callNext",
+  param("deskId").isInt().toInt(),
+  async (req, res, next) => {
+    const result = validationResult(req);
+
+    if (result.isEmpty()) {
+      const { deskId } = matchedData(req);
+
+      try {
+        const nextClient = await callNextClient(deskId);
+        res.json(nextClient);
+      } catch (e) {
+        next(e);
+        console.error(e);
+      }
+    } else {
+      res.status(422).send({ errors: result.array() });
+    }
+  }
+);
+
+// dequeue client from department
 app.post(
   "/desk/:deskId/dequeue",
   param("deskId").isInt().toInt(),
@@ -99,9 +125,6 @@ app.post(
     }
   }
 );
-
-/*  Authentication Middleware */
-app.use(verifyToken);
 
 // call client
 app.post(
@@ -136,6 +159,59 @@ app.listen(3000, () =>
   console.log("REST API server ready at: http://localhost:3000")
 );
 
+// dequeue next client
+async function callNextClient(deskId: number) {
+  return await prisma.$transaction(async (tx) => {
+    const nextClient = await tx.client.findFirst({
+      where: {
+        called: false,
+      },
+      orderBy: {
+        id: "asc",
+      },
+    });
+
+    if (!nextClient) {
+      await tx.desk.update({
+        data: {
+          clientId: null,
+        },
+        where: {
+          id: deskId,
+        },
+      });
+      return nextClient;
+    }
+
+    // throws RecordNotFound
+    const nextClientUpdated = await tx.client.update({
+      data: {
+        called: true,
+        version: {
+          increment: 1,
+        },
+      },
+      where: {
+        id: nextClient.id,
+        version: nextClient.version,
+        called: false,
+      },
+    });
+
+    await tx.desk.update({
+      data: {
+        clientId: nextClient.id,
+      },
+      where: {
+        id: deskId,
+      },
+    });
+
+    return nextClientUpdated;
+  });
+}
+
+// dequeue by department
 async function dequeue(deskId: number, departmentId: number) {
   return await prisma.$transaction(async (tx) => {
     const nextClient = await tx.client.findFirst({
