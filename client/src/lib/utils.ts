@@ -6,51 +6,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function debounce<T extends (...args: unknown[]) => unknown>(
-  callback: T,
-  wait: number,
-) {
-  let timeoutId: number;
-  return (...args: unknown[]) => {
-    window.clearTimeout(timeoutId);
-    timeoutId = window.setTimeout(() => {
-      callback(...args);
-    }, wait);
-  };
-}
-
-export const throttle = <R, A extends any[]>(
-  fn: (...args: A) => R,
-  delay: number,
-): [(...args: A) => R | undefined, () => void] => {
-  let wait = false;
-  let timeout: undefined | number;
-  let cancelled = false;
-
-  return [
-    (...args: A) => {
-      if (cancelled) return undefined;
-      if (wait) return undefined;
-
-      const val = fn(...args);
-
-      wait = true;
-
-      timeout = window.setTimeout(() => {
-        wait = false;
-      }, delay);
-
-      return val;
-    },
-    () => {
-      cancelled = true;
-      clearTimeout(timeout);
-    },
-  ];
-};
-
 let BACKEND_URL = "http://qms.local/api";
-
 
 if (!import.meta.env.PROD) {
   BACKEND_URL = "http://localhost:3000";

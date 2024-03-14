@@ -4,6 +4,7 @@ import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { createClient, getDepartments } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import useThrottle from "@/hooks/useThrottle";
 
 export const Route = createLazyFileRoute("/_auth/kiosk")({
   component: Kiosk,
@@ -33,9 +34,11 @@ function Kiosk() {
     },
   });
 
+  const handleClick = useThrottle(mutation.mutate, 1500, [])
+
   const deskButtons = departments?.map((department) => (
     <Button
-      onTouchStart={mutation.mutate}
+      onTouchStart={handleClick}
       value={department.id}
       key={department.id}
       variant={"default-no-hover"}
