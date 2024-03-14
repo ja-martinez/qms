@@ -49,17 +49,12 @@ export const throttle = <R, A extends any[]>(
   ];
 };
 
-// const BACKEND_URL = "http://qms.local/api";
+let BACKEND_URL = "http://qms.local/api";
 
-const BACKEND_URL = "http://localhost:3000";
 
-// if (import.meta.env.PROD) {
-//   BACKEND_URL = "http://tranquility.local/api";
-// }
-
-// if (import.meta.env?.DEPLOY_MODE === "DEPLOY") {
-//   BACKEND_URL = "http://qms.local/api"
-// }
+if (!import.meta.env.PROD) {
+  BACKEND_URL = "http://localhost:3000";
+}
 
 export async function getDesks(): Promise<Desk[]> {
   const response = await fetch(`${BACKEND_URL}/desks`);
