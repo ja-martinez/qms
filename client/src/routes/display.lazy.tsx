@@ -2,12 +2,22 @@ import { createLazyFileRoute } from "@tanstack/react-router";
 import { REFETCH_INTERVAL } from "@/lib/globals";
 import { getDesks } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
+import soundUrl from "@/assets/notification.mp3"
+import { Howl } from "howler";
+import { useState } from "react";
+import { Desk } from "@/lib/types";
 
 export const Route = createLazyFileRoute("/display")({
   component: Display,
 });
 
+const sound = new Howl({
+  src: [soundUrl]
+})
+
 function Display() {
+  const [prevDesks, setPrevDesks] = useState<Desk[] | undefined>([])
+
   const { data: desks } = useQuery({
     queryKey: ["desks"],
     queryFn: getDesks,
@@ -45,6 +55,22 @@ function Display() {
       </>
     );
   });
+
+  if (desks && prevDesks) {
+    console.log(desks, prevDesks)
+    console.log(desks[3].clientId)
+    for (let i=0; i<desks.length; i++) {
+      if (desks[i]?.clientId !== prevDesks[i]?.clientId) {
+        sound.play()
+        setPrevDesks(desks)
+      }
+    }
+  }
+
+  if (!prevDesks && desks) {
+    setPrevDesks(desks)
+  }
+
 
   return (
     <div className="h-screen bg-neutral-100 overflow-hidden">

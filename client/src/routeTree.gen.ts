@@ -23,16 +23,10 @@ import { Route as AuthAppDashboardImport } from './routes/_auth/_app/dashboard'
 
 // Create Virtual Routes
 
-const Display2LazyImport = createFileRoute('/display-2')()
 const DisplayLazyImport = createFileRoute('/display')()
 const AuthKioskLazyImport = createFileRoute('/_auth/kiosk')()
 
 // Create/Update Routes
-
-const Display2LazyRoute = Display2LazyImport.update({
-  path: '/display-2',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/display-2.lazy').then((d) => d.Route))
 
 const DisplayLazyRoute = DisplayLazyImport.update({
   path: '/display',
@@ -103,10 +97,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DisplayLazyImport
       parentRoute: typeof rootRoute
     }
-    '/display-2': {
-      preLoaderRoute: typeof Display2LazyImport
-      parentRoute: typeof rootRoute
-    }
     '/_auth/_app': {
       preLoaderRoute: typeof AuthAppImport
       parentRoute: typeof AuthImport
@@ -140,7 +130,6 @@ export const routeTree = rootRoute.addChildren([
   ]),
   InitialRoute.addChildren([InitialChooseDeskRoute, InitialLogInRoute]),
   DisplayLazyRoute,
-  Display2LazyRoute,
 ])
 
 /* prettier-ignore-end */
