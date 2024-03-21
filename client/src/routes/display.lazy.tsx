@@ -1,8 +1,7 @@
+import { createLazyFileRoute } from "@tanstack/react-router";
 import { REFETCH_INTERVAL } from "@/lib/globals";
 import { getDesks } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { createLazyFileRoute } from "@tanstack/react-router";
-import { MoveRight } from "lucide-react";
 
 export const Route = createLazyFileRoute("/display")({
   component: Display,
@@ -36,34 +35,45 @@ function Display() {
 
   const deskDisplays = desks?.map((desk) => {
     return (
-      <div className="flex items-center justify-between rounded-xl border border-gray-300 bg-white px-8 py-3">
-        <div className="flex flex-col items-center justify-center">
-          <div className="text-xl text-muted-foreground">Cliente</div>
-          <div className="text-9xl font-medium">{desk.client?.id || "--"}</div>
+      <>
+        <div className="flex items-center justify-center bg-white text-[2rem] xl:text-[3.5rem]">
+          <div>{desk.number}</div>
         </div>
-        <MoveRight size={70} strokeWidth={1.4} color="#737373" />
-        <div className="flex flex-col items-center justify-center">
-          <div className="text-xl text-muted-foreground">Escritorio</div>
-          <div className="text-9xl font-medium">{desk.number}</div>
+        <div className="flex items-center justify-center bg-white text-[2rem] xl:text-[3.5rem]">
+          <div>{desk.clientId ? desk.clientId : "--"}</div>
         </div>
-      </div>
+      </>
     );
   });
 
   return (
-    <div className="h-screen bg-neutral-100 p-10">
-      <div className="grid h-full grid-flow-col grid-cols-2 grid-rows-5 gap-x-7 gap-y-3">
-        {deskDisplays}
-        <div className="col-start-2 row-span-3 row-start-1 flex flex-col items-center justify-center gap-3 rounded-xl border border-gray-300 bg-white p-3">
+    <div className="h-screen bg-neutral-100 overflow-hidden">
+      <div className="grid h-full grid-cols-2 gap-1.5 bg-black">
+        {/* All desks section */}
+        <div className="grid grid-cols-2 grid-rows-8 gap-y-1.5">
+          <div className="flex items-center justify-center bg-white text-4xl">
+            <div>Escritorio</div>
+          </div>
+          <div className="flex items-center justify-center bg-white text-4xl">
+            <div>Cliente</div>
+          </div>
+          {deskDisplays}
+        </div>
+        {/* Most recent client section */}
+        <div className="flex flex-col items-center justify-start bg-white p-7 gap-8 leading-none">
           {mostRecentIndex !== undefined ? (
             <>
-              <div className="text-3xl ">Numero</div>
-              <div className="text-[11rem] font-medium text-green-600">
-                {desks![mostRecentIndex].clientId}
+              <div className="flex flex-col items-center gap-4">
+                <div className="text-[3rem] ">Numero</div>
+                <div className="text-[15rem] font-medium">
+                  {desks![mostRecentIndex].clientId}
+                </div>
               </div>
-              <div className="text-3xl ">Proceda al escritorio</div>
-              <div className="text-[11rem] font-medium text-green-600">
-                {desks![mostRecentIndex].number}
+              <div className="flex flex-col items-center gap-4">
+                <div className="text-[3rem] ">Proceda al escritorio</div>
+                <div className="text-[15rem] font-medium">
+                  {desks![mostRecentIndex].number}
+                </div>
               </div>
             </>
           ) : (
