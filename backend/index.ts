@@ -49,6 +49,9 @@ app.get("/departments", async (req, res, next) => {
   }
 });
 
+/*  Authentication Middleware */
+app.use(verifyToken);
+
 // enqueue client / create client
 app.post("/clients", body("departmentId").isInt(), async (req, res, next) => {
   const result = validationResult(req);
@@ -75,9 +78,6 @@ app.post("/clients", body("departmentId").isInt(), async (req, res, next) => {
     res.status(422).send({ errors: result.array() });
   }
 });
-
-/*  Authentication Middleware */
-app.use(verifyToken);
 
 // Call next client any department
 app.post(
