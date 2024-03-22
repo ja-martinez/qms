@@ -138,6 +138,7 @@ export default function ClientTable() {
     state: {
       columnFilters,
     },
+    autoResetPageIndex: false
   });
 
   if (clientsQuery.status !== "success") {
@@ -160,7 +161,7 @@ export default function ClientTable() {
         /> */}
       </div>
       {/* Table */}
-      <div className="rounded-md border px-3 py-1">
+      <div className="rounded-md border px-3 py-1 mb-2">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
