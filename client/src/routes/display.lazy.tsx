@@ -2,7 +2,7 @@ import { createLazyFileRoute } from "@tanstack/react-router";
 import { REFETCH_INTERVAL } from "@/lib/globals";
 import { getDesks } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import soundUrl from "@/assets/notification.mp3"
+import soundUrl from "@/assets/notification.mp3";
 import { Howl } from "howler";
 import { useState } from "react";
 import { Desk } from "@/lib/types";
@@ -12,11 +12,11 @@ export const Route = createLazyFileRoute("/display")({
 });
 
 const sound = new Howl({
-  src: [soundUrl]
-})
+  src: [soundUrl],
+});
 
 function Display() {
-  const [prevDesks, setPrevDesks] = useState<Desk[] | undefined>([])
+  const [prevDesks, setPrevDesks] = useState<Desk[] | undefined>([]);
 
   const { data: desks } = useQuery({
     queryKey: ["desks"],
@@ -46,10 +46,10 @@ function Display() {
   const deskDisplays = desks?.map((desk) => {
     return (
       <>
-        <div className="flex items-center justify-center bg-white text-[2rem] xl:text-[3.5rem]">
+        <div className="flex items-center justify-center bg-white text-[2rem] xl:text-[3.5rem] 2xl:text-[4rem]">
           <div>{desk.number}</div>
         </div>
-        <div className="flex items-center justify-center bg-white text-[2rem] xl:text-[3.5rem]">
+        <div className="flex items-center justify-center bg-white text-[2rem] xl:text-[3.5rem] 2xl:text-[4rem]">
           <div>{desk.clientId ? desk.clientId : "--"}</div>
         </div>
       </>
@@ -57,23 +57,22 @@ function Display() {
   });
 
   if (desks && prevDesks) {
-    console.log(desks, prevDesks)
-    console.log(desks[3].clientId)
-    for (let i=0; i<desks.length; i++) {
+    console.log(desks, prevDesks);
+    console.log(desks[3].clientId);
+    for (let i = 0; i < desks.length; i++) {
       if (desks[i]?.clientId !== prevDesks[i]?.clientId) {
-        sound.play()
-        setPrevDesks(desks)
+        sound.play();
+        setPrevDesks(desks);
       }
     }
   }
 
   if (!prevDesks && desks) {
-    setPrevDesks(desks)
+    setPrevDesks(desks);
   }
 
-
   return (
-    <div className="h-screen bg-neutral-100 overflow-hidden">
+    <div className="h-screen overflow-hidden bg-neutral-100">
       <div className="grid h-full grid-cols-2 gap-1.5 bg-black">
         {/* All desks section */}
         <div className="grid grid-cols-2 grid-rows-8 gap-y-1.5">
@@ -86,18 +85,22 @@ function Display() {
           {deskDisplays}
         </div>
         {/* Most recent client section */}
-        <div className="flex flex-col items-center justify-start bg-white p-7 gap-8 leading-none">
+        <div className="flex flex-col items-center justify-start gap-8 bg-white p-7 leading-none">
           {mostRecentIndex !== undefined ? (
             <>
               <div className="flex flex-col items-center gap-4">
-                <div className="text-[3rem] ">Numero</div>
-                <div className="text-[15rem] font-medium">
+                <div className="text-[3rem] font-medium 2xl:text-[5rem]">
+                  Numero
+                </div>
+                <div className="text-[17rem] font-bold 2xl:text-[18rem]">
                   {desks![mostRecentIndex].clientId}
                 </div>
               </div>
               <div className="flex flex-col items-center gap-4">
-                <div className="text-[3rem] ">Proceda al escritorio</div>
-                <div className="text-[15rem] font-medium">
+                <div className="text-[3rem] font-medium 2xl:text-[5rem]">
+                  Proceda al escritorio
+                </div>
+                <div className="text-[17rem] font-bold 2xl:text-[18rem]">
                   {desks![mostRecentIndex].number}
                 </div>
               </div>
