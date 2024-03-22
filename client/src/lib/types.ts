@@ -21,4 +21,5 @@ export interface Client {
     id: number;
     name: string;
   };
+  lastDesk: Desk;
 }

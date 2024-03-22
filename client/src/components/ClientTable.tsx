@@ -41,6 +41,10 @@ const columns: ColumnDef<Client>[] = [
     header: "Department",
   },
   {
+    accessorKey: "lastDesk.number",
+    header: "Desk"
+  },
+  {
     accessorKey: "called",
     header: "Called",
     cell: ({ row }) => {
