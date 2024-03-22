@@ -13,7 +13,7 @@ datasource db {
 model Department {
   id      Int      @id @default(autoincrement())
   name    String   @unique
-  name_es String @unique
+  name_es String   @unique
   clients Client[]
 }
 
@@ -23,14 +23,17 @@ model Client {
   department   Department @relation(fields: [departmentId], references: [id])
   departmentId Int
   desk         Desk?
+  lastDesk     Desk?      @relation("lastDesk", fields: [lastDeskId], references: [id])
+  lastDeskId   Int?
   version      Int        @default(1)
   updatedAt    DateTime   @updatedAt
 }
 
 model Desk {
-  id        Int      @id @default(autoincrement())
-  number    Int      @unique
-  client    Client?  @relation(fields: [clientId], references: [id])
-  clientId  Int?     @unique
-  updatedAt DateTime @updatedAt @default(now())
+  id              Int      @id @default(autoincrement())
+  number          Int      @unique
+  client          Client?  @relation(fields: [clientId], references: [id])
+  clientId        Int?     @unique
+  lastDeskClients Client[] @relation("lastDesk")
+  updatedAt       DateTime @default(now()) @updatedAt
 }

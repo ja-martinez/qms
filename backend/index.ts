@@ -17,8 +17,8 @@ app.get("/desks", async (req, res, next) => {
     const desks = await prisma.desk.findMany({
       include: { client: true },
       orderBy: {
-        number: "asc"
-      }
+        number: "asc",
+      },
     });
     res.json(desks);
   } catch (e) {
@@ -30,7 +30,7 @@ app.get("/desks", async (req, res, next) => {
 app.get("/clients", async (req, res, next) => {
   try {
     const clients = await prisma.client.findMany({
-      include: { department: true },
+      include: { department: true, lastDesk: true },
     });
     res.json(clients);
   } catch (e) {
@@ -63,10 +63,10 @@ app.post("/clients", body("departmentId").isInt(), async (req, res, next) => {
             connect: { id: departmentId },
           },
         },
-        include: {department: true}
+        include: { department: true },
       });
       res.json(newClient);
-      print(newClient.id.toString(), newClient.department.name_es)
+      print(newClient.id.toString(), newClient.department.name_es);
     } catch (e) {
       next(e);
       console.error(e);
@@ -79,7 +79,7 @@ app.post("/clients", body("departmentId").isInt(), async (req, res, next) => {
 /*  Authentication Middleware */
 app.use(verifyToken);
 
-// Call next client
+// Call next client any department
 app.post(
   "/desk/:deskId/callNext",
   param("deskId").isInt().toInt(),
@@ -190,6 +190,7 @@ async function callNextClient(deskId: number) {
         version: {
           increment: 1,
         },
+        lastDeskId: deskId,
       },
       where: {
         id: nextClient.id,
@@ -245,6 +246,7 @@ async function dequeue(deskId: number, departmentId: number) {
         version: {
           increment: 1,
         },
+        lastDeskId: deskId,
       },
       where: {
         id: nextClient.id,
@@ -315,12 +317,22 @@ async function callClient(deskId: number, clientId: number) {
     }
 
     // assign client to specified desk
-    const desk = await tx.desk.update({
+    await tx.desk.update({
       data: {
         clientId,
       },
       where: {
         id: deskId,
+      },
+    });
+
+    // set client lastDesk
+    await tx.client.update({
+      data: {
+        lastDeskId: deskId,
+      },
+      where: {
+        id: clientId,
       },
     });
 
