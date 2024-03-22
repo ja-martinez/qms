@@ -72,7 +72,10 @@ function Display() {
   }
 
   return (
-    <div className="h-screen overflow-hidden bg-neutral-100">
+    <div
+      className="h-screen overflow-hidden bg-neutral-100"
+      onClick={() => sound.play()}
+    >
       <div className="grid h-full grid-cols-2 gap-1.5 bg-black">
         {/* All desks section */}
         <div className="grid grid-cols-2 grid-rows-8 gap-y-1.5">
