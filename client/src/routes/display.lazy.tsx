@@ -95,7 +95,7 @@ function Display() {
                 <div className="text-[3rem] font-medium 2xl:text-[5rem]">
                   Numero
                 </div>
-                <div className="text-[17rem] font-bold 2xl:text-[18rem]">
+                <div className="text-[17rem] font-bold 2xl:text-[19rem]">
                   {desks![mostRecentIndex].clientId}
                 </div>
               </div>
@@ -103,7 +103,7 @@ function Display() {
                 <div className="text-[3rem] font-medium 2xl:text-[5rem]">
                   Proceda al escritorio
                 </div>
-                <div className="text-[17rem] font-bold 2xl:text-[18rem]">
+                <div className="text-[17rem] font-bold 2xl:text-[19rem]">
                   {desks![mostRecentIndex].number}
                 </div>
               </div>
