@@ -4,7 +4,7 @@ import { getDesks } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import soundUrl from "@/assets/notification.mp3";
 import { Howl } from "howler";
-import { useState } from "react";
+import { useState, Fragment, useRef, useEffect } from "react";
 import { Desk } from "@/lib/types";
 
 export const Route = createLazyFileRoute("/display")({
@@ -17,6 +17,8 @@ const sound = new Howl({
 
 function Display() {
   const [prevDesks, setPrevDesks] = useState<Desk[] | undefined>([]);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const { data: desks } = useQuery({
     queryKey: ["desks"],
@@ -45,31 +47,63 @@ function Display() {
 
   const deskDisplays = desks?.map((desk) => {
     return (
-      <>
+      <Fragment key={desk.id}>
         <div className="flex items-center justify-center bg-white text-[2rem] xl:text-[3.5rem] 2xl:text-[4rem]">
           <div>{desk.number}</div>
         </div>
         <div className="flex items-center justify-center bg-white text-[2rem] xl:text-[3.5rem] 2xl:text-[4rem]">
           <div>{desk.clientId ? desk.clientId : "--"}</div>
         </div>
-      </>
+      </Fragment>
     );
   });
 
-  if (desks && prevDesks) {
-    console.log(desks, prevDesks);
-    console.log(desks[3].clientId);
-    for (let i = 0; i < desks.length; i++) {
-      if (desks[i]?.clientId !== prevDesks[i]?.clientId) {
-        sound.play();
-        setPrevDesks(desks);
+  useEffect(() => {
+    // Check if there's a new desk
+    if (desks && prevDesks) {
+      for (let i = 0; i < desks.length; i++) {
+        if (desks[i]?.clientId !== prevDesks[i]?.clientId) {
+          sound.play();
+          setPrevDesks(desks);
+
+          const mostRecentNode = document.getElementById("most-recent");
+
+          if (!timeoutRef.current) {
+            intervalRef.current = setInterval(() => {
+              if (
+                mostRecentNode?.style.backgroundColor ===
+                "rgb(255 255 255 / var(--tw-bg-opacity))"
+              ) {
+                mostRecentNode!.style.backgroundColor =
+                  "rgb(134 239 172 / var(--tw-bg-opacity))";
+              } else {
+                mostRecentNode!.style.backgroundColor =
+                  "rgb(255 255 255 / var(--tw-bg-opacity))";
+              }
+            }, 800);
+          } else {
+            clearTimeout(timeoutRef.current);
+          }
+
+          timeoutRef.current = setTimeout(() => {
+            clearInterval(intervalRef.current!);
+            mostRecentNode!.style.backgroundColor =
+              "rgb(255 255 255 / var(--tw-bg-opacity))";
+
+            intervalRef.current = null;
+            timeoutRef.current = null;
+          }, 30000);
+
+          // now exit because only one change is relevant
+          break;
+        }
       }
     }
-  }
 
-  if (!prevDesks && desks) {
-    setPrevDesks(desks);
-  }
+    if (!prevDesks && desks) {
+      setPrevDesks(desks);
+    }
+  }, [desks, prevDesks]);
 
   return (
     <div
@@ -88,7 +122,10 @@ function Display() {
           {deskDisplays}
         </div>
         {/* Most recent client section */}
-        <div className="flex flex-col items-center justify-start gap-8 bg-white p-7 leading-none">
+        <div
+          id="most-recent"
+          className="flex flex-col items-center justify-start gap-8 bg-white p-7 leading-none"
+        >
           {mostRecentIndex !== undefined ? (
             <>
               <div className="flex flex-col items-center gap-4">
