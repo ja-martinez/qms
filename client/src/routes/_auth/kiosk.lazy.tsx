@@ -42,7 +42,7 @@ function Kiosk() {
       value={department.id}
       key={department.id}
       variant={"default-no-hover"}
-      className="tracking-wid h-full grow basis-0 text-wrap rounded-md bg-blue-800 px-8 text-6xl"
+      className={`tracking-wid h-full grow basis-0 text-wrap rounded-md ${department.id == 1 ? "bg-indigo-800" : "bg-green-700"} px-8 text-6xl`}
     >
       {department.name_es}
     </Button>

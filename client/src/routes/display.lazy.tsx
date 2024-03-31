@@ -48,10 +48,10 @@ function Display() {
   const deskDisplays = desks?.map((desk) => {
     return (
       <Fragment key={desk.id}>
-        <div className="flex items-center justify-center bg-white text-[2rem] xl:text-[3.5rem] 2xl:text-[4rem]">
+        <div className="flex items-center justify-center bg-white text-[2rem] xl:text-[4.5rem] 2xl:text-[4rem]">
           <div>{desk.number}</div>
         </div>
-        <div className="flex items-center justify-center bg-white text-[2rem] xl:text-[3.5rem] 2xl:text-[4rem]">
+        <div className="flex items-center justify-center bg-white text-[2rem] xl:text-[4.5rem] 2xl:text-[4rem]">
           <div>{desk.clientId ? desk.clientId : "--"}</div>
         </div>
       </Fragment>
@@ -113,10 +113,10 @@ function Display() {
       <div className="grid h-full grid-cols-2 gap-1.5 bg-black">
         {/* All desks section */}
         <div className="grid grid-cols-2 grid-rows-8 gap-y-1.5">
-          <div className="flex items-center justify-center bg-white text-4xl">
+          <div className="flex items-center justify-center bg-white text-4xl xl:text-[3.5rem]">
             <div>Escritorio</div>
           </div>
-          <div className="flex items-center justify-center bg-white text-4xl">
+          <div className="flex items-center justify-center bg-white text-4xl xl:text-[3.5rem]">
             <div>Cliente</div>
           </div>
           {deskDisplays}
