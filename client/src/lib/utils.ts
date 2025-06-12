@@ -7,9 +7,10 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 let BACKEND_URL = "http://qms.local/api";
+// let BACKEND_URL = "http://qms-4.local/api";
 
 if (!import.meta.env.PROD) {
-  BACKEND_URL = "http://localhost:3000";
+  BACKEND_URL = "http://tranquility.local:3000";
 }
 
 export async function getDesks(): Promise<Desk[]> {

@@ -69,7 +69,7 @@ app.post("/clients", body("departmentId").isInt(), async (req, res, next) => {
         include: { department: true },
       });
       res.json(newClient);
-      print(newClient.id.toString(), newClient.department.name_es);
+      print(newClient.id.toString(), newClient.department.name);
     } catch (e) {
       next(e);
       console.error(e);

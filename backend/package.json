@@ -23,6 +23,7 @@
     "@prisma/client": "^5.9.1",
     "cors": "^2.8.5",
     "escpos": "^3.0.0-alpha.6",
+    "escpos-network": "^3.0.0-alpha.5",
     "escpos-usb": "^3.0.0-alpha.4",
     "express": "^4.18.2",
     "express-validator": "^7.0.1",

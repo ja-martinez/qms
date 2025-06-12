@@ -5,6 +5,7 @@ const path = require("path")
 const escpos = require("escpos");
 
 escpos.USB = require("escpos-usb");
+// escpos.Network = require("escpos-network")
 
 const options = {
   encoding: "GB18030"
@@ -12,9 +13,12 @@ const options = {
 
 const logo = path.join(__dirname, "assets/logo.png");
 
-export function print (number, department) { 
-  // const device = new escpos.USB(0x1504, 0x003d);  // bixolon (qms)
-  const device = new escpos.USB(0x04b8, 0x0e32);  // epson (qms-4)
+function print (number, department) { 
+  // const device = new escpos.USB(0x1504, 0x003d);
+  // const device = new escpos.USB(0x0e32, 0x04b8);
+  const device = new escpos.USB(0x04b8, 0x0e32);
+  // const device = new escpos.Network('192.168.0.127', 8008);
+  // 192.168.0.127 8008
   
   const printer = new escpos.Printer(device, options);
 
@@ -45,3 +49,5 @@ export function print (number, department) {
     });
   });
 }
+
+print("134", "DMV")

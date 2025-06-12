@@ -18,13 +18,13 @@ import { Route as AuthImport } from './routes/_auth'
 import { Route as IndexImport } from './routes/index'
 import { Route as InitialLogInImport } from './routes/_initial/logIn'
 import { Route as InitialChooseDeskImport } from './routes/_initial/chooseDesk'
+import { Route as AuthKioskImport } from './routes/_auth/kiosk'
 import { Route as AuthAppImport } from './routes/_auth/_app'
 import { Route as AuthAppDashboardImport } from './routes/_auth/_app/dashboard'
 
 // Create Virtual Routes
 
 const DisplayLazyImport = createFileRoute('/display')()
-const AuthKioskLazyImport = createFileRoute('/_auth/kiosk')()
 
 // Create/Update Routes
 
@@ -48,11 +48,6 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const AuthKioskLazyRoute = AuthKioskLazyImport.update({
-  path: '/kiosk',
-  getParentRoute: () => AuthRoute,
-} as any).lazy(() => import('./routes/_auth/kiosk.lazy').then((d) => d.Route))
-
 const InitialLogInRoute = InitialLogInImport.update({
   path: '/logIn',
   getParentRoute: () => InitialRoute,
@@ -64,6 +59,11 @@ const InitialChooseDeskRoute = InitialChooseDeskImport.update({
 } as any).lazy(() =>
   import('./routes/_initial/chooseDesk.lazy').then((d) => d.Route),
 )
+
+const AuthKioskRoute = AuthKioskImport.update({
+  path: '/kiosk',
+  getParentRoute: () => AuthRoute,
+} as any)
 
 const AuthAppRoute = AuthAppImport.update({
   id: '/_app',
@@ -101,6 +101,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAppImport
       parentRoute: typeof AuthImport
     }
+    '/_auth/kiosk': {
+      preLoaderRoute: typeof AuthKioskImport
+      parentRoute: typeof AuthImport
+    }
     '/_initial/chooseDesk': {
       preLoaderRoute: typeof InitialChooseDeskImport
       parentRoute: typeof InitialImport
@@ -108,10 +112,6 @@ declare module '@tanstack/react-router' {
     '/_initial/logIn': {
       preLoaderRoute: typeof InitialLogInImport
       parentRoute: typeof InitialImport
-    }
-    '/_auth/kiosk': {
-      preLoaderRoute: typeof AuthKioskLazyImport
-      parentRoute: typeof AuthImport
     }
     '/_auth/_app/dashboard': {
       preLoaderRoute: typeof AuthAppDashboardImport
@@ -126,7 +126,7 @@ export const routeTree = rootRoute.addChildren([
   IndexRoute,
   AuthRoute.addChildren([
     AuthAppRoute.addChildren([AuthAppDashboardRoute]),
-    AuthKioskLazyRoute,
+    AuthKioskRoute,
   ]),
   InitialRoute.addChildren([InitialChooseDeskRoute, InitialLogInRoute]),
   DisplayLazyRoute,

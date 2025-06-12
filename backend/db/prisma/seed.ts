@@ -27,6 +27,10 @@ async function main() {
         name: "Motor Vehicle Services",
         name_es: "Placas / Titulos"
       },
+      {
+        name: "Driver's License",
+        name_es: "Licencias"
+      },
     ],
   });
 
